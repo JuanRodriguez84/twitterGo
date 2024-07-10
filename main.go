@@ -11,9 +11,11 @@ import (
 	"github.com/aws/aws-lambda-go/events" // todo el manejo de eventos dentro de Amazon se maneja con este paquete  tambien se debe descargar desde la terminal con   go get github.com/aws/aws-lambda-go/events
 	//events : maneja tambien los de ALB para load balancer
 	"github.com/JuanRodriguez84/twitterGo/awsgo"
+	"github.com/JuanRodriguez84/twitterGo/models"
+	"github.com/JuanRodriguez84/twitterGo/secretmanager"
 )
 
-func main() {
+ func main() {
 	// Cuando se trabaja con lambdas lo que nos pide es que main llame a una función y le pase un parametro
 	// En AWS configuramos el controlador colocamos main, con eso le indicamos que cuando la lambda se ejecute y sea llamada por la API Gateway este main va a ser la puerta de entrada
 	lambda.Start(EjecutoLambda) // inicializa el handler de la lambda, se pasa el nombre de la función "EjecutoLambda" como parametro para procesar
@@ -43,6 +45,19 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return respuesta, nil
 	}
 
+	// la fucnion GetSecret devuleve un tipo de dato de estrutura y un error
+	SecretModel, err := secretmanager.GetSecret(os.Getenv("SecretName")) // os.Getenv  para obtener el valor de la variable de entorno
+
+	if err != nil {
+		respuesta = &events.APIGatewayProxyResponse{ // & obtener la dirección de memoria
+			StatusCode: 400, // puede ser error 500
+			Body:       "Error en la lectura de secter " + err.Error(),
+			Headers: map[string]string{
+				"Content-Type": "application/json", // no siempre es application/json
+			},
+		}
+		return respuesta, nil
+	}
 }
 
 // En Go (Golang), los símbolos * y & tienen significados diferentes y se utilizan para trabajar con punteros
@@ -71,19 +86,19 @@ func ValidoParametros() bool {
 		return traeParametro
 	}
 
-	return traeParametro
-}
+
+} 
 
 // Ejemplos punteros
-func Punteros() {
+func punteros() {
 	var x int = 10    // Declara una variable int
 	var ptr *int = &x // Declara un puntero a int y asigna la dirección de memoria de x
 
-	fmt.Println("Valor de x:", x)                // Imprime el valor de x
-	fmt.Println("Dirección de x:", &x)           // Imprime la dirección de memoria de x
-	fmt.Println("Valor apuntado por ptr:", *ptr) // Imprime el valor apuntado por ptr (dereferenciación)
+	fmt.Println("Valor de x:", x)                // Imprime el valor de x    -> "10"
+	fmt.Println("Dirección de x:", &x)           // Imprime la dirección de memoria de x       -> "0xc0000a0a8 u otra dirección"
+	fmt.Println("Valor apuntado por ptr:", *ptr) // Imprime el valor apuntado por ptr (dereferenciación)    -> "10"
 
-	*ptr = 20 // Modifica el valor de x a través de ptr (dereferenciación y asignación)
+	*ptr = 20 // Modifica el valor de x a través de ptr (dereferenciación y asignación)     
 
-	fmt.Println("Nuevo valor de x:", x) // Imprime el nuevo valor de x
+	fmt.Println("Nuevo valor de x:", x) // Imprime el nuevo valor de x     -> "20"
 }
