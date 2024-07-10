@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os" // de sistema operativo por que se va a incorporar el tema de las variables de entorno ya que alas lambdas tienen variables de entorno
+	"strings"
 
 	// os permite leer las variables de entorno
 	lambda "github.com/aws/aws-lambda-go/lambda" // paquete permite trabajar con lamdas para hacer un go get
@@ -15,7 +16,7 @@ import (
 	"github.com/JuanRodriguez84/twitterGo/secretmanager"
 )
 
- func main() {
+func main() {
 	// Cuando se trabaja con lambdas lo que nos pide es que main llame a una función y le pase un parametro
 	// En AWS configuramos el controlador colocamos main, con eso le indicamos que cuando la lambda se ejecute y sea llamada por la API Gateway este main va a ser la puerta de entrada
 	lambda.Start(EjecutoLambda) // inicializa el handler de la lambda, se pasa el nombre de la función "EjecutoLambda" como parametro para procesar
@@ -58,6 +59,31 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		}
 		return respuesta, nil
 	}
+
+	// aca se trabaja con el context
+
+	// el path viene en un objeto del request llamado PathParameters, en PathParameters viene "twitterGo/login"  que le quite "twitterGo/""
+	path := strings.Replace(request.PathParameters["twitterGo"], os.Getenv("UrlPrefix"), "", -1) // remplazar lo que esta en la variable de entorno UrlPrefix por nada "" y que comience desde -1 para que busque desde el inicio de la cadena del string
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("path"), path)
+
+	//empezamos creando variables en el contxeto con el paquete context.WithValue()
+
+	// el primer parametro es el context}
+	// segundo es la clave, que debe ser de un tipo de dato en particular, pero lo que pide GO es no utilizar explicitamente un tipo de dato string para una clave, tenemos que crear un tipo de dato propio
+	// tercero es el valor
+	//awsgo.Ctx = context.WithValue(awsgo.Ctx, "method", request.HTTPMethod)  // method :  si es un POST, PUT, GET, etc dejarlo en "method" genera inconvenientes por eso se debe crear un tipo de dato
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("method"), request.HTTPMethod)
+	// el context esta por encima de toda la lambda y ademas si se tiene una serializacion de lambdas que una lambda tiene que ejecutar otra lambda, el context exporta esas variable
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("user"), SecretModel.Username) // user viene del secretmanager
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("password"), SecretModel.Password)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("host"), SecretModel.Host)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("database"), SecretModel.Database)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtsSign"), SecretModel.JWTSign)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("body"), request.Body)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName")) // las imagenes bienen codificadas en base 64 pero vienen como texto
+
+	// en el context se grabo todas las variables de ejecución que voya a necesitar
+
 }
 
 // En Go (Golang), los símbolos * y & tienen significados diferentes y se utilizan para trabajar con punteros
@@ -86,8 +112,7 @@ func ValidoParametros() bool {
 		return traeParametro
 	}
 
-
-} 
+}
 
 // Ejemplos punteros
 func punteros() {
@@ -98,7 +123,7 @@ func punteros() {
 	fmt.Println("Dirección de x:", &x)           // Imprime la dirección de memoria de x       -> "0xc0000a0a8 u otra dirección"
 	fmt.Println("Valor apuntado por ptr:", *ptr) // Imprime el valor apuntado por ptr (dereferenciación)    -> "10"
 
-	*ptr = 20 // Modifica el valor de x a través de ptr (dereferenciación y asignación)     
+	*ptr = 20 // Modifica el valor de x a través de ptr (dereferenciación y asignación)
 
 	fmt.Println("Nuevo valor de x:", x) // Imprime el nuevo valor de x     -> "20"
 }
