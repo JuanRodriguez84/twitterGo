@@ -59,7 +59,7 @@ func ProcesoToken(tk string, JWTSign string) (*models.Claim, bool, string, error
 	}
 
 	if !tkn.Valid {
-		return &claims, false, string(""), errors.New("Token invalido") // esto es lo que va a legar a postman, por ejemplo si el token esta expirado
+		return &claims, false, string(""), errors.New("token invalido") // esto es lo que va a legar a postman, por ejemplo si el token esta expirado
 
 	}
 
