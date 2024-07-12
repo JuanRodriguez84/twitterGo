@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/JuanRodriguez84/twitterGo/models"
 	"github.com/JuanRodriguez84/twitterGo/jwt"
+	"github.com/JuanRodriguez84/twitterGo/models"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/JuanRodriguez84/twitterGo/routers"
 )
 
 // primer parametro Context
@@ -30,10 +31,12 @@ func Manejadores(ctx context.Context, request events.APIGatewayProxyRequest) mod
 		return respuesta
 	}
 
+	// en routers se va a tener un archivo .go por cada endpoint
 	switch ctx.Value(models.Key("method")).(string) {
 	case "POST":
 		switch ctx.Value(models.Key("path")).(string) {
-			
+		case "registro":
+			return routers.Registro(ctx)
 		}
 
 	case "GET":
