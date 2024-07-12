@@ -15,7 +15,7 @@ import (
 	"github.com/JuanRodriguez84/twitterGo/bd"
 	"github.com/JuanRodriguez84/twitterGo/handlers"
 	"github.com/JuanRodriguez84/twitterGo/models"
-	"github.com/JuanRodriguez84/twitterGo/secretmanager"
+	"github.com/JuanRodriguez84/twitterGo/secretmanager"	
 )
 
 func main() {
@@ -102,7 +102,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	RespAPI := handlers.Manejadores(awsgo.Ctx, request)
 
-	if RespAPI.CustomResponse == nil {  // si no viene aramado , por que cuando procesa imagenes ya viene armado un CustomResponse personalizadp para essa API
+	if RespAPI.CustomResponse == nil { // si no viene aramado , por que cuando procesa imagenes ya viene armado un CustomResponse personalizadp para essa API
 		respuesta = &events.APIGatewayProxyResponse{ // & obtener la dirección de memoria
 			StatusCode: RespAPI.Status,
 			Body:       RespAPI.Message,
@@ -113,7 +113,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return respuesta, nil
 	} else {
 		return RespAPI.CustomResponse, nil
-	}	
+	}
 
 }
 
