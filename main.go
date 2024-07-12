@@ -15,7 +15,7 @@ import (
 	"github.com/JuanRodriguez84/twitterGo/bd"
 	"github.com/JuanRodriguez84/twitterGo/handlers"
 	"github.com/JuanRodriguez84/twitterGo/models"
-	"github.com/JuanRodriguez84/twitterGo/secretmanager"	
+	"github.com/JuanRodriguez84/twitterGo/secretmanager"
 )
 
 func main() {
@@ -80,7 +80,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("password"), SecretModel.Password)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("host"), SecretModel.Host)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("database"), SecretModel.Database)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtsSign"), SecretModel.JWTSign)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtSign"), SecretModel.JWTSign)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("body"), request.Body)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName")) // las imagenes bienen codificadas en base 64 pero vienen como texto
 
