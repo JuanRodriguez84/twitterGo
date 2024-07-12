@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-lambda-go/events" // todo el manejo de eventos dentro de Amazon se maneja con este paquete  tambien se debe descargar desde la terminal con   go get github.com/aws/aws-lambda-go/events
 	//events : maneja tambien los de ALB para load balancer
 	"github.com/JuanRodriguez84/twitterGo/awsgo"
+	"github.com/JuanRodriguez84/twitterGo/bd"
 	"github.com/JuanRodriguez84/twitterGo/models"
 	"github.com/JuanRodriguez84/twitterGo/secretmanager"
 )
@@ -52,7 +53,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	if err != nil {
 		respuesta = &events.APIGatewayProxyResponse{ // & obtener la dirección de memoria
 			StatusCode: 400, // puede ser error 500
-			Body:       "Error en la lectura de secter " + err.Error(),
+			Body:       "Error en la lectura de secret " + err.Error(),
 			Headers: map[string]string{
 				"Content-Type": "application/json", // no siempre es application/json
 			},
@@ -82,7 +83,21 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("body"), request.Body)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName")) // las imagenes bienen codificadas en base 64 pero vienen como texto
 
-	// en el context se grabo todas las variables de ejecución que voya a necesitar
+	// en el context se grabo todas las variables de ejecución que voy a necesitar
+
+	// Chequeo conexión a la base de datos o conecto la base de datos
+	err = bd.ConectarBD(awsgo.Ctx)
+
+	if err != nil {
+		respuesta = &events.APIGatewayProxyResponse{ // & obtener la dirección de memoria
+			StatusCode: 500, // puede ser error 500
+			Body:       "Error conectando en la Base de datos" + err.Error(),
+			Headers: map[string]string{
+				"Content-Type": "application/json", // no siempre es application/json
+			},
+		}
+		return respuesta, nil
+	}
 
 }
 
@@ -111,6 +126,8 @@ func ValidoParametros() bool {
 	if !traeParametro {
 		return traeParametro
 	}
+
+	return traeParametro
 
 }
 
