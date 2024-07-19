@@ -6,8 +6,8 @@ import (
 
 	"github.com/JuanRodriguez84/twitterGo/jwt"
 	"github.com/JuanRodriguez84/twitterGo/models"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/JuanRodriguez84/twitterGo/routers"
+	"github.com/aws/aws-lambda-go/events"
 )
 
 // primer parametro Context
@@ -23,7 +23,7 @@ func Manejadores(ctx context.Context, request events.APIGatewayProxyRequest) mod
 	respuesta.Status = 400 // valor por default
 
 	// en el headr viene un campo llamado validoAuthorization y va a venir con el token, aunque no todos los endpoints van a requerir autenticación, por ejemplo cuando un usuario se registra todavia no hay ningun token
-	isOk, statusCode, msg, claim := validoAuthorization(ctx, request)
+	isOk, statusCode, msg, _ := validoAuthorization(ctx, request) // "claim" se remplaza por "_" ,  por que para compilar guenera error ya que no se estaba utilizando
 
 	if !isOk {
 		respuesta.Status = statusCode
