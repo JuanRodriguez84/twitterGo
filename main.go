@@ -65,7 +65,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	// aca se trabaja con el context
 
 	// el path viene en un objeto del request llamado PathParameters, en PathParameters viene "twitterGo/login"  que le quite "twitterGo/""
-	path := strings.Replace(request.PathParameters["twitterGo"], os.Getenv("UrlPrefix"), "", -1) // remplazar lo que esta en la variable de entorno UrlPrefix por nada "" y que comience desde -1 para que busque desde el inicio de la cadena del string
+	path := strings.Replace(request.PathParameters["twittergo"], os.Getenv("UrlPrefix"), "", -1) // remplazar lo que esta en la variable de entorno UrlPrefix por nada "" y que comience desde -1 para que busque desde el inicio de la cadena del string
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("path"), path)
 
 	//empezamos creando variables en el contxeto con el paquete context.WithValue()
