@@ -30,7 +30,7 @@ func GeneroJWT(contexto context.Context, usuario models.Usuario) (string, error)
 		"ubicacion": usuario.Ubicacion,
 		"sitioweb": usuario.SitioWeb,
 		"_id" : usuario.ID.Hex(), // como ID es de tipo primitivo en la estructura Usuario se convierte a string a travez de la funcion Hex
-		"exp": time.Now().Add(time.Hour*24).Unix() // función para la expiracion y va a durar un dia, por esto se multiplica por 24, se transforma aunique por que la expiración de JWT se grana en formato unix (SO)
+		"exp": time.Now().Add(time.Hour*24).Unix(), // función para la expiracion y va a durar un dia, por esto se multiplica por 24, se transforma aunique por que la expiración de JWT se grana en formato unix (SO)
 	}
 
 	// aca se crea el token
