@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	// esta en la pagina de jwt para go , se debe hacer el respectivo go get en la terminal
+	"github.com/JuanRodriguez84/twitterGo/bd"
 	"github.com/JuanRodriguez84/twitterGo/models"
 	jwt "github.com/golang-jwt/jwt/v5" // para verificar si el usuario que viene el el token existe
 )
@@ -41,7 +42,7 @@ func ProcesoToken(tk string, JWTSign string) (*models.Claim, bool, string, error
 		return &claims, false, "", errors.New("formato de token invalido")
 	}
 
-	tk = strings.TrimSpace(splitToken[1]) // TrimSpace quita espacios que pueda tener al inicio y al final de uan cadena de caracteres
+	tk = strings.TrimSpace(splitToken[1]) // TrimSpace quita espacios que pueda tener al inicio y al final de una cadena de caracteres
 	// tk toma el valor del token, que esta en la posicon 1 ya que en el 0 esta el valor Bearer
 
 	// ahora vamos a procesar el token
@@ -56,6 +57,12 @@ func ProcesoToken(tk string, JWTSign string) (*models.Claim, bool, string, error
 
 	if err == nil {
 		// Aca se va a tener la rutina que chequea contra la BD
+		_, encontrado, _ := bd.ChequeoYaExisteUsuario(claims.Email)
+		if encontrado{
+			Email = claims.Email
+			IDUsuario = claims.ID.Hex()
+		}
+		return &claims, encontrado, IDUsuario, nil
 	}
 
 	if !tkn.Valid {
