@@ -76,13 +76,13 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	//awsgo.Ctx = context.WithValue(awsgo.Ctx, "method", request.HTTPMethod)  // method :  si es un POST, PUT, GET, etc dejarlo en "method" genera inconvenientes por eso se debe crear un tipo de dato
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("method"), request.HTTPMethod)
 	// el context esta por encima de toda la lambda y ademas si se tiene una serializacion de lambdas que una lambda tiene que ejecutar otra lambda, el context exporta esas variable
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("user"), SecretModel.Username) // user viene del secretmanager
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("password"), SecretModel.Password)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("host"), SecretModel.Host)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("database"), SecretModel.Database)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtSign"), SecretModel.JWTSign)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("user"), SecretModel.Username)     // user viene del secretmanager
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("password"), SecretModel.Password) // en secretmanager está como L3Qzbh6IklAiZFDv
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("host"), SecretModel.Host)         // en secretmanager está	twitter.hesfakk.mongodb.net que es la URL que da Mongo compass para conectarnos a la BD de mongo
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("database"), SecretModel.Database) // en secretmanager está como twitter
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtSign"), SecretModel.JWTSign)   // en secretmanager está como MastersdelDesarrollo_grupodeFacebook
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("body"), request.Body)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName")) // las imagenes bienen codificadas en base 64 pero vienen como texto
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName")) // las imagenes bienen codificadas en base 64 pero vienen como texto. Variables de entorno de la lambda AWS esta como "twitterGo"
 
 	// en el context se grabo todas las variables de ejecución que voy a necesitar
 
@@ -150,35 +150,35 @@ func ValidoParametros() bool {
 // Ejemplos punteros
 func punteros() {
 	var x int = 10    // Declara una variable int
-	var ptr *int = &x // Declara un puntero a int y asigna la dirección de memoria de x , 
+	var ptr *int = &x // Declara un puntero a int y asigna la dirección de memoria de x ,
 
-	// Declaración de puntero: Cuando se declara una variable como puntero, el asterisco (*) se 
-	// coloca antes del tipo de dato para indicar que la variable es un puntero a ese tipo de dato. 
+	// Declaración de puntero: Cuando se declara una variable como puntero, el asterisco (*) se
+	// coloca antes del tipo de dato para indicar que la variable es un puntero a ese tipo de dato.
 	// Por ejemplo:   var ptr *int
-	// En este caso, ptr es un puntero a un valor de tipo int. Esto significa que ptr almacenará la dirección de memoria 
+	// En este caso, ptr es un puntero a un valor de tipo int. Esto significa que ptr almacenará la dirección de memoria
 	// donde se encuentra almacenado un valor de tipo int.
 
-	fmt.Println("Valor de x:", x)                // Imprime el valor de x    -> "10"
-	fmt.Println("Dirección de x:", &x)           // Imprime la dirección de memoria de x       -> "0xc0000a0a8 u otra dirección"
+	fmt.Println("Valor de x:", x)      // Imprime el valor de x    -> "10"
+	fmt.Println("Dirección de x:", &x) // Imprime la dirección de memoria de x       -> "0xc0000a0a8 u otra dirección"
 
-	// &x es la dirección de memoria donde está almacenado el valor de x. Esto es útil cuando se desea pasar la dirección de una 
+	// &x es la dirección de memoria donde está almacenado el valor de x. Esto es útil cuando se desea pasar la dirección de una
 	// variable (un puntero) a funciones o cuando se desea asignar esa dirección a otra variable que sea de tipo puntero.
 
 	fmt.Println("Valor apuntado por ptr:", *ptr) // Imprime el valor apuntado por ptr (dereferenciación)    -> "10"
 
-	// Dereferenciación: Cuando se usa el asterisco (*) como operador de dereferenciación, se coloca antes de un puntero para obtener 
+	// Dereferenciación: Cuando se usa el asterisco (*) como operador de dereferenciación, se coloca antes de un puntero para obtener
 	// el valor almacenado en la dirección de memoria apuntada por ese puntero. Por ejemplo:
 	// fmt.Println("Valor apuntado por ptr:", *ptr)
 	// Aquí, *ptr obtiene el valor de tipo int almacenado en la dirección de memoria apuntada por ptr.
-	
+
 	*ptr = 20 // Modifica el valor de x a través de ptr (dereferenciación y asignación)
 
 	fmt.Println("Nuevo valor de x:", x) // Imprime el nuevo valor de x     -> "20"
 
-	// - ptr *int se coloca antes del tipo de dato para indicar que la variable es un puntero a ese tipo de dato. Esto significa  
+	// - ptr *int se coloca antes del tipo de dato para indicar que la variable es un puntero a ese tipo de dato. Esto significa
 	// 	          que ptr almacenará la dirección de memoria donde se encuentra almacenado un valor de tipo int.
-	
+
 	// - *ptr obtener el valor de un tipo (definido en la declaracion) almacenada en al dirección de memoria apuntada por ptr
-	// - &x obtener la dirección de memoria donde está almacenado el valor de x Esto es útil cuando se desea pasar la dirección de 
+	// - &x obtener la dirección de memoria donde está almacenado el valor de x Esto es útil cuando se desea pasar la dirección de
 	//      una variable (un puntero) a funciones o cuando se desea asignar esa dirección a otra variable que sea de tipo puntero.
 }
